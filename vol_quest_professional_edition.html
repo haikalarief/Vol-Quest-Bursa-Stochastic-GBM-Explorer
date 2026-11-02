@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vol-Quest: Gen Z Chill Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(135deg, #fdf8f4 0%, #edf2f7 50%, #fef3c7 100%); color: #1e293b; min-height: 100vh; }
+        .font-mono { font-family: 'Space Mono', monospace; }
+        .chill-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border: 2px solid rgba(243, 236, 228, 0.8); box-shadow: 0 10px 35px rgba(99, 102, 241, 0.08); border-radius: 24px; }
+        .chill-pill { background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%); color: #c2410c; border: 1.5px solid #fde68a; }
+        .tab-btn.active { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #ffffff; border-color: transparent; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); }
+        .tab-btn { background: #ffffff; color: #475569; border: 2px solid #e2e8f0; transition: all 0.2s ease; }
+        
+        /* Device frame container styles */
+        #device-frame-wrapper {
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-3 sm:p-6 flex flex-col items-center justify-start">
+
+    <!-- Top Navigation Header -->
+    <header class="max-w-6xl mx-auto w-full mb-6 flex flex-col lg:flex-row justify-between items-center gap-4 chill-card p-4 sm:p-5 border-t-4 border-indigo-500">
+        <div class="flex items-center space-x-3.5">
+            <div class="bg-gradient-to-tr from-indigo-600 to-violet-500 text-white p-3 rounded-2xl font-bold text-sm shadow-md shadow-indigo-500/20">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div>
+                <h1 class="text-base font-extrabold tracking-tight bg-gradient-to-r from-indigo-900 to-violet-800 bg-clip-text text-transparent">Vol-Quest Financial Explorer</h1>
+                <p class="text-xs text-slate-500 font-semibold">Chapter 14 • Quantitative Asset Modeling</p>
+            </div>
+        </div>
+        
+        <div class="flex flex-wrap items-center gap-3 justify-end w-full lg:w-auto">
+            <!-- Navigation Tabs -->
+            <div class="flex items-center space-x-1.5">
+                <button onclick="switchTab('simulator')" id="btn-simulator" class="tab-btn active px-3.5 py-2 rounded-2xl text-xs font-bold cursor-pointer">
+                    <i class="fa-solid fa-sliders mr-1"></i> Sim
+                </button>
+                <button onclick="switchTab('elements')" id="btn-elements" class="tab-btn px-3.5 py-2 rounded-2xl text-xs font-bold cursor-pointer">
+                    <i class="fa-solid fa-seedling mr-1"></i> Elements
+                </button>
+                <button onclick="switchTab('quiz')" id="btn-quiz" class="tab-btn px-3.5 py-2 rounded-2xl text-xs font-bold cursor-pointer">
+                    <i class="fa-solid fa-face-smile mr-1"></i> Quiz
+                </button>
+            </div>
+
+            <div class="h-6 w-[1px] bg-slate-300 hidden sm:block"></div>
+
+            <!-- Device View Switcher -->
+            <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-2xl border border-slate-200">
+                <button onclick="setDevice('desktop')" id="dev-desktop" title="Desktop View (Full)" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-sm transition cursor-pointer">
+                    <i class="fa-solid fa-desktop"></i>
+                </button>
+                <button onclick="setDevice('tablet')" id="dev-tablet" title="Tablet View (768px)" class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-indigo-600 transition cursor-pointer">
+                    <i class="fa-solid fa-tablet-screen-button"></i>
+                </button>
+                <button onclick="setDevice('mobile')" id="dev-mobile" title="Mobile View (380px)" class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-indigo-600 transition cursor-pointer">
+                    <i class="fa-solid fa-mobile-screen"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- DEVICE FRAME WRAPPER -->
+    <div id="device-frame-wrapper" class="w-full flex justify-center">
+        <main id="app-viewport-container" class="w-full max-w-5xl space-y-6 transition-all duration-300">
+            
+            <!-- TAB 1: SIMULATOR -->
+            <div id="tab-simulator" class="tab-content grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Controls Sidebar -->
+                <div class="lg:col-span-5 chill-card p-5 sm:p-6 space-y-4 border-l-4 border-l-amber-500">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <h2 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center">
+                            <i class="fa-solid fa-sliders text-amber-500 mr-2"></i> Model Parameters
+                        </h2>
+                        <span class="text-[10px] chill-pill px-2.5 py-0.5 rounded-full font-mono font-bold">GBM Model</span>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Preset Bursa Asset</label>
+                        <select id="presetSelect" onchange="applyPreset()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl p-3 text-xs font-medium focus:outline-none focus:border-indigo-500 cursor-pointer shadow-sm">
+                            <option value="maybank">Maybank (Low Vol, High Dividend)</option>
+                            <option value="tenaga">Tenaga Nasional (Moderate Vol)</option>
+                            <option value="genetec">Genetec (High Growth Vol)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5">
+                            <span>Initial Stock Price (S₀)</span>
+                            <span id="valS0" class="text-indigo-600 font-mono font-bold">RM 10.00</span>
+                        </div>
+                        <input type="range" id="inputS0" min="1" max="50" step="0.5" value="10" oninput="runSimulation()" class="w-full accent-indigo-600 cursor-pointer">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5">
+                            <span>Expected Return (Drift μ)</span>
+                            <span id="valMu" class="text-indigo-600 font-mono font-bold">12.0%</span>
+                        </div>
+                        <input type="range" id="inputMu" min="0.01" max="0.30" step="0.01" value="0.12" oninput="runSimulation()" class="w-full accent-indigo-600 cursor-pointer">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5">
+                            <span>Volatility (σ)</span>
+                            <span id="valSigma" class="text-indigo-600 font-mono font-bold">20.0%</span>
+                        </div>
+                        <input type="range" id="inputSigma" min="0.05" max="0.80" step="0.02" value="0.20" oninput="runSimulation()" class="w-full accent-indigo-600 cursor-pointer">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5">
+                            <span>Time Horizon (T in Years)</span>
+                            <span id="valT" class="text-indigo-600 font-mono font-bold">1.00 Yrs</span>
+                        </div>
+                        <input type="range" id="inputT" min="0.25" max="3.00" step="0.25" value="1.00" oninput="runSimulation()" class="w-full accent-indigo-600 cursor-pointer">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5">
+                            <span>Monte Carlo Paths</span>
+                            <span id="valPaths" class="text-indigo-600 font-mono font-bold">10 Paths</span>
+                        </div>
+                        <input type="range" id="inputPaths" min="5" max="30" step="5" value="10" oninput="runSimulation()" class="w-full accent-indigo-600 cursor-pointer">
+                    </div>
+
+                    <button onclick="runSimulation()" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold py-3.5 rounded-2xl text-xs flex items-center justify-center space-x-2 transition shadow-lg shadow-indigo-500/25 cursor-pointer">
+                        <i class="fa-solid fa-rotate"></i>
+                        <span>Re-Run Monte Carlo Simulation</span>
+                    </button>
+                </div>
+
+                <!-- Chart & Live Metrics Display -->
+                <div class="lg:col-span-7 space-y-6">
+                    <!-- Chart Card -->
+                    <div class="chill-card p-5 sm:p-6 border-t-4 border-t-indigo-500">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
+                            <h3 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Simulated Price Paths vs. √T Cones</h3>
+                            <!-- Chart Legend Badges -->
+                            <div class="flex items-center space-x-3 text-[10px] font-bold">
+                                <span class="flex items-center space-x-1">
+                                    <span class="w-3 h-1 bg-amber-500 rounded-full inline-block"></span>
+                                    <span class="text-slate-600">Simulated Path</span>
+                                </span>
+                                <span class="flex items-center space-x-1">
+                                    <span class="w-3 h-1 bg-rose-400 border border-dashed border-rose-500 rounded-full inline-block"></span>
+                                    <span class="text-slate-600">95% Confidence Bounds</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="h-60 sm:h-72 w-full">
+                            <canvas id="simulationChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Breakdown -->
+                    <div class="chill-card p-5 sm:p-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white border-indigo-500/30">
+                        <div class="flex items-center space-x-2 text-amber-400 font-bold text-xs mb-4 uppercase tracking-wider">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <span>Live Metrics Breakdown</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="bg-slate-800/80 p-4 rounded-2xl border border-indigo-500/30 shadow-inner">
+                                <div class="text-[10px] text-indigo-300 font-medium">Expected Price E[S_T]</div>
+                                <div id="metricExpected" class="text-base font-extrabold text-amber-400 font-mono mt-1">RM 11.27</div>
+                                <div class="text-[9px] text-slate-400 mt-1">S₀ × e^(μT)</div>
+                            </div>
+                            <div class="bg-slate-800/80 p-4 rounded-2xl border border-indigo-500/30 shadow-inner">
+                                <div class="text-[10px] text-indigo-300 font-medium">Std Deviation (σ√T)</div>
+                                <div id="metricStdDev" class="text-base font-extrabold text-amber-400 font-mono mt-1">20.0%</div>
+                                <div class="text-[9px] text-slate-400 mt-1">Grows with square root of T</div>
+                            </div>
+                            <div class="bg-slate-800/80 p-4 rounded-2xl border border-indigo-500/30 shadow-inner">
+                                <div class="text-[10px] text-indigo-300 font-medium">95% Range Bounds</div>
+                                <div id="metricBounds" class="text-xs font-extrabold text-amber-400 font-mono mt-1 truncate">RM 7.47 - 16.36</div>
+                                <div class="text-[9px] text-slate-400 mt-1">Lognormal distribution range</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: CHOSEN K-ELEMENTS -->
+            <div id="tab-elements" class="tab-content hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- K4 Element -->
+                <div class="chill-card p-6 space-y-4 border-t-4 border-t-blue-500 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold font-mono">K4 • Group A</span>
+                            <span class="text-xs text-slate-400 font-semibold">Slides 12–14</span>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-slate-900 text-base mb-1.5">Wiener Process (Brownian Motion)</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Models pure continuous random noise steps where each step change is defined as:
+                            </p>
+                        </div>
+                        <div class="bg-blue-50/80 border border-blue-200 p-3 rounded-xl text-center font-mono text-xs font-bold text-blue-700 shadow-sm">
+                            Δz = ε √Δt &nbsp;|&nbsp; ε ~ N(0,1)
+                        </div>
+                        <ul class="space-y-2 text-xs text-slate-600">
+                            <li class="flex items-start"><span class="mr-2 text-blue-500 font-bold">•</span><span><strong>Mean step:</strong> E[Δz] = 0</span></li>
+                            <li class="flex items-start"><span class="mr-2 text-blue-500 font-bold">•</span><span><strong>Variance:</strong> Var[Δz] = Δt</span></li>
+                            <li class="flex items-start"><span class="mr-2 text-blue-500 font-bold">•</span><span><strong>Time Scaling:</strong> Var[z(T) - z(0)] = T</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="switchTab('simulator')" class="w-full mt-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center space-x-1 transition shadow-md shadow-blue-500/20 cursor-pointer">
+                        <span>Test in Lab</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+
+                <!-- K6 Element -->
+                <div class="chill-card p-6 space-y-4 border-t-4 border-t-emerald-500 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-bold font-mono">K6 • Group B</span>
+                            <span class="text-xs text-slate-400 font-semibold">Slides 22–29</span>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-slate-900 text-base mb-1.5">Itô Process & GBM</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Adapts continuous noise to stock price movements where return percentage is normally distributed:
+                            </p>
+                        </div>
+                        <div class="bg-emerald-50/80 border border-emerald-200 p-3 rounded-xl text-center font-mono text-xs font-bold text-emerald-700 shadow-sm">
+                            dS = μS dt + σS dz
+                        </div>
+                        <ul class="space-y-2 text-xs text-slate-600">
+                            <li class="flex items-start"><span class="mr-2 text-emerald-500 font-bold">•</span><span><strong>Drift component:</strong> Expected growth μS dt</span></li>
+                            <li class="flex items-start"><span class="mr-2 text-emerald-500 font-bold">•</span><span><strong>Stochastic component:</strong> Random noise σS dz</span></li>
+                            <li class="flex items-start"><span class="mr-2 text-emerald-500 font-bold">•</span><span><strong>Distribution:</strong> ΔS/S ~ φ(μΔt, σ²Δt)</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="switchTab('simulator')" class="w-full mt-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center space-x-1 transition shadow-md shadow-emerald-500/20 cursor-pointer">
+                        <span>Test in Lab</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+
+                <!-- K8 Element -->
+                <div class="chill-card p-6 space-y-4 border-t-4 border-t-purple-500 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-bold font-mono">K8 • Group B</span>
+                            <span class="text-xs text-slate-400 font-semibold">Slides 33–34</span>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-slate-900 text-base mb-1.5">Parameters μ and σ</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Distinguishes expected market return from volatility and derivative valuation dynamics:
+                            </p>
+                        </div>
+                        <div class="bg-purple-50/80 border border-purple-200 p-3 rounded-xl text-center font-mono text-xs font-bold text-purple-700 shadow-sm">
+                            SD(S_T) = σ √T
+                        </div>
+                        <ul class="space-y-2 text-xs text-slate-600">
+                            <li class="flex items-start"><span class="mr-2 text-purple-500 font-bold">•</span><span><strong>Expected return μ:</strong> Physical asset trend</span></li>
+                            <li class="flex items-start"><span class="mr-2 text-purple-500 font-bold">•</span><span><strong>Volatility σ:</strong> Drives option pricing & risk</span></li>
+                            <li class="flex items-start"><span class="mr-2 text-purple-500 font-bold">•</span><span><strong>Risk-Neutrality:</strong> Derivative pricing drops μ</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="switchTab('simulator')" class="w-full mt-4 bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center space-x-1 transition shadow-md shadow-purple-500/20 cursor-pointer">
+                        <span>Test in Lab</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 3: SELF-CHECK QUIZ -->
+            <div id="tab-quiz" class="tab-content hidden chill-card p-6 sm:p-8 max-w-2xl mx-auto space-y-6 border-t-4 border-t-amber-500">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div>
+                        <span class="chill-pill px-3 py-1 rounded-full text-xs font-mono font-bold">Interactive Self-Check ☕</span>
+                        <h2 class="text-base font-extrabold text-slate-900 mt-2">Chapter 14 Mastery Quiz</h2>
+                    </div>
+                    <div id="quizProgress" class="text-xs font-mono font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-200">
+                        Question 1 of 4
+                    </div>
+                </div>
+
+                <!-- Quiz Question Container -->
+                <div id="quizQuestionBox" class="space-y-4">
+                    <!-- Injected via JavaScript -->
+                </div>
+
+                <div id="quizFeedbackBox" class="hidden p-4 rounded-2xl text-xs font-medium"></div>
+
+                <!-- Quiz Summary / Scorecard -->
+                <div id="quizScorecard" class="hidden space-y-4 text-center py-6 bg-gradient-to-br from-indigo-50 to-violet-50 rounded-2xl border border-indigo-200 p-6">
+                    <div class="text-3xl font-extrabold text-indigo-900" id="finalScoreDisplay">Score: 4/4</div>
+                    <p class="text-xs text-slate-600 max-w-md mx-auto" id="finalScoreMessage">Outstanding! You've completely mastered Wiener processes and Geometric Brownian Motion.</p>
+                    <button onclick="restartQuiz()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-2xl text-xs transition shadow-md cursor-pointer">
+                        <i class="fa-solid fa-rotate-right mr-1.5"></i> Take Quiz Again
+                    </button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        let myChart = null;
+
+        // Quiz State & Data
+        const quizQuestions = [
+            {
+                question: "Does volatility scale linearly with time horizon $T$?",
+                options: [
+                    "A) Yes, volatility doubles if time doubles (linear scaling).",
+                    "B) No, volatility scales with the square root of time ($\sigma\sqrt{T}$)."
+                ],
+                correct: 1,
+                explanation: "✨ Spot on! Standard deviation grows with the square root of time due to independent random increments in continuous time."
+            },
+            {
+                question: "What is the expected mean step $E[\Delta z]$ for a Wiener Process increment over time step $\Delta t$?",
+                options: [
+                    "A) Zero ($E[\Delta z] = 0$).",
+                    "B) Equal to the drift coefficient $\mu \Delta t$."
+                ],
+                correct: 0,
+                explanation: "✨ Correct! A Wiener process increment has a mean of zero and variance equal to the time increment $\Delta t$."
+            },
+            {
+                question: "In Geometric Brownian Motion (GBM) $dS = \mu S dt + \sigma S dz$, what does the $\mu S dt$ term represent?",
+                options: [
+                    "A) The random market noise component.",
+                    "B) The deterministic drift (expected growth) component."
+                ],
+                correct: 1,
+                explanation: "✨ Spot on! $\mu S dt$ represents the deterministic drift trend of the asset, while $\sigma S dz$ captures stochastic volatility."
+            },
+            {
+                question: "Why is Geometric Brownian Motion (GBM) preferred for modeling stock prices over standard arithmetic Brownian motion?",
+                options: [
+                    "A) GBM ensures that stock prices never become negative.",
+                    "B) GBM assumes stock prices are normally distributed around zero."
+                ],
+                correct: 0,
+                explanation: "✨ Correct! Because stock returns are lognormal, GBM guarantees prices remain strictly positive ($S > 0$), preventing negative prices."
+            }
+        ];
+
+        let currentQuestionIdx = 0;
+        let scoreCount = 0;
+        let answeredCurrent = false;
+
+        function loadQuizQuestion() {
+            answeredCurrent = false;
+            const q = quizQuestions[currentQuestionIdx];
+            document.getElementById('quizProgress').innerText = `Question ${currentQuestionIdx + 1} of ${quizQuestions.length}`;
+            
+            const qBox = document.getElementById('quizQuestionBox');
+            let html = `<h3 class="text-sm font-bold text-slate-800 mb-4">${q.question}</h3><div class="space-y-3">`;
+            
+            q.options.forEach((opt, idx) => {
+                html += `<button onclick="submitQuizAnswer(${idx})" id="opt-btn-${idx}" class="w-full text-left p-4 rounded-2xl border border-slate-200 text-xs font-medium hover:bg-indigo-50/60 hover:border-indigo-300 transition cursor-pointer shadow-sm">${opt}</button>`;
+            });
+            html += `</div>`;
+            qBox.innerHTML = html;
+
+            document.getElementById('quizFeedbackBox').classList.add('hidden');
+            document.getElementById('quizScorecard').classList.add('hidden');
+            qBox.classList.remove('hidden');
+        }
+
+        function submitQuizAnswer(selectedIndex) {
+            if (answeredCurrent) return;
+            answeredCurrent = true;
+
+            const q = quizQuestions[currentQuestionIdx];
+            const feedbackBox = document.getElementById('quizFeedbackBox');
+            feedbackBox.classList.remove('hidden');
+
+            const buttons = document.querySelectorAll('#quizQuestionBox button');
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === q.correct) {
+                    btn.className = "w-full text-left p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 text-xs font-bold shadow-sm";
+                } else if (idx === selectedIndex) {
+                    btn.className = "w-full text-left p-4 rounded-2xl border-2 border-rose-500 bg-rose-50 text-rose-900 text-xs font-bold shadow-sm";
+                } else {
+                    btn.className = "w-full text-left p-4 rounded-2xl border border-slate-200 bg-slate-50 text-slate-400 text-xs font-medium opacity-50";
+                }
+            });
+
+            if (selectedIndex === q.correct) {
+                scoreCount++;
+                feedbackBox.className = "p-4 rounded-2xl text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 space-y-3";
+                feedbackBox.innerHTML = `<div>${q.explanation}</div>`;
+            } else {
+                feedbackBox.className = "p-4 rounded-2xl text-xs font-medium bg-rose-50 text-rose-800 border border-rose-200 space-y-3";
+                feedbackBox.innerHTML = `<div>☕ <strong>Not quite!</strong> Review the element cards for more details.</div>`;
+            }
+
+            // Add Next Button
+            const nextBtnText = currentQuestionIdx < quizQuestions.length - 1 ? 'Next Question →' : 'View Performance Scorecard →';
+            feedbackBox.innerHTML += `<button onclick="nextQuizStep()" class="mt-2 bg-slate-900 hover:bg-indigo-600 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition cursor-pointer shadow-sm">${nextBtnText}</button>`;
+        }
+
+        function nextQuizStep() {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < quizQuestions.length) {
+                loadQuizQuestion();
+            } else {
+                showQuizScorecard();
+            }
+        }
+
+        function showQuizScorecard() {
+            document.getElementById('quizQuestionBox').classList.add('hidden');
+            document.getElementById('quizFeedbackBox').classList.add('hidden');
+            
+            const scorecard = document.getElementById('quizScorecard');
+            scorecard.classList.remove('hidden');
+
+            const scoreDisplay = document.getElementById('finalScoreDisplay');
+            const scoreMsg = document.getElementById('finalScoreMessage');
+
+            scoreDisplay.innerText = `Final Score: ${scoreCount} / ${quizQuestions.length}`;
+
+            if (scoreCount === quizQuestions.length) {
+                scoreMsg.innerText = "🌟 Absolute Masterclass! You answered every question correctly and fully understand Chapter 14 quantitative asset modeling.";
+            } else if (scoreCount >= 2) {
+                scoreMsg.innerText = "👍 Great job! You have a solid grasp of the core concepts. Review the Elements tab to refine your understanding further.";
+            } else {
+                scoreMsg.innerText = "☕ Keep exploring! Take another look at the Wiener process and GBM formulas in the Elements tab.";
+            }
+        }
+
+        function restartQuiz() {
+            currentQuestionIdx = 0;
+            scoreCount = 0;
+            loadQuizQuestion();
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.getElementById('btn-' + tabId).classList.add('active');
+
+            if (tabId === 'simulator' && !myChart) {
+                initChart();
+            } else if (tabId === 'simulator' && myChart) {
+                setTimeout(() => myChart.resize(), 100);
+            } else if (tabId === 'quiz') {
+                if (currentQuestionIdx === 0 && !answeredCurrent) {
+                    loadQuizQuestion();
+                }
+            }
+        }
+
+        function setDevice(device) {
+            const container = document.getElementById('app-viewport-container');
+            const btnDesktop = document.getElementById('dev-desktop');
+            const btnTablet = document.getElementById('dev-tablet');
+            const btnMobile = document.getElementById('dev-mobile');
+
+            // Reset buttons
+            [btnDesktop, btnTablet, btnMobile].forEach(b => {
+                b.className = "px-3 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer";
+            });
+
+            if (device === 'desktop') {
+                container.style.maxWidth = '64rem'; // max-w-5xl
+                container.style.padding = '0px';
+                container.style.minHeight = 'auto';
+                btnDesktop.className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white transition cursor-pointer";
+            } else if (device === 'tablet') {
+                container.style.maxWidth = '768px';
+                container.style.padding = '16px';
+                container.style.minHeight = 'auto';
+                container.style.border = '4px solid #2d2621';
+                container.style.borderRadius = '32px';
+                container.style.background = '#ffffff';
+                container.style.boxShadow = '0 20px 40px rgba(0,0,0,0.15)';
+                btnTablet.className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white transition cursor-pointer";
+            } else if (device === 'mobile') {
+                container.style.maxWidth = '360px';
+                container.style.minHeight = '680px'; // Enforce vertical phone height
+                container.style.padding = '16px';
+                container.style.border = '8px solid #2d2621';
+                container.style.borderRadius = '40px';
+                container.style.background = '#ffffff';
+                container.style.boxShadow = '0 25px 50px rgba(0,0,0,0.25)';
+                btnMobile.className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white transition cursor-pointer";
+            }
+
+            if (device === 'desktop') {
+                container.style.border = 'none';
+                container.style.borderRadius = '0px';
+                container.style.background = 'transparent';
+                container.style.boxShadow = 'none';
+            }
+
+            if (myChart) {
+                setTimeout(() => myChart.resize(), 150);
+            }
+        }
+
+        function applyPreset() {
+            const val = document.getElementById('presetSelect').value;
+            if (val === 'maybank') {
+                document.getElementById('inputS0').value = 10;
+                document.getElementById('inputMu').value = 0.10;
+                document.getElementById('inputSigma').value = 0.15;
+            } else if (val === 'tenaga') {
+                document.getElementById('inputS0').value = 12;
+                document.getElementById('inputMu').value = 0.12;
+                document.getElementById('inputSigma').value = 0.22;
+            } else if (val === 'genetec') {
+                document.getElementById('inputS0').value = 4.5;
+                document.getElementById('inputMu').value = 0.25;
+                document.getElementById('inputSigma').value = 0.55;
+            }
+            runSimulation();
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('simulationChart').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { title: { display: true, text: 'Time (Years)', font: { family: 'Plus Jakarta Sans', size: 10, weight: 'bold' } }, grid: { color: 'rgba(226, 232, 240, 0.5)' } },
+                        y: { title: { display: true, text: 'Stock Price (RM)', font: { family: 'Plus Jakarta Sans', size: 10, weight: 'bold' } }, grid: { color: 'rgba(226, 232, 240, 0.5)' } }
+                    },
+                    plugins: { 
+                        legend: { 
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                font: { family: 'Plus Jakarta Sans', size: 10, weight: 'bold' },
+                                boxWidth: 12,
+                                filter: function(legendItem, chartData) {
+                                    // Only show representative items in legend to keep it clean
+                                    return legendItem.text === 'Path 1' || legendItem.text.includes('95%');
+                                }
+                            }
+                        } 
+                    }
+                }
+            });
+            runSimulation();
+        }
+
+        function runSimulation() {
+            const S0 = parseFloat(document.getElementById('inputS0').value);
+            const mu = parseFloat(document.getElementById('inputMu').value);
+            const sigma = parseFloat(document.getElementById('inputSigma').value);
+            const T = parseFloat(document.getElementById('inputT').value);
+            const numPaths = parseInt(document.getElementById('inputPaths').value);
+
+            document.getElementById('valS0').innerText = 'RM ' + S0.toFixed(2);
+            document.getElementById('valMu').innerText = (mu * 100).toFixed(1) + '%';
+            document.getElementById('valSigma').innerText = (sigma * 100).toFixed(1) + '%';
+            document.getElementById('valT').innerText = T.toFixed(2) + ' Yrs';
+            document.getElementById('valPaths').innerText = numPaths + ' Paths';
+
+            const steps = 20;
+            const dt = T / steps;
+            const labels = [];
+            for (let i = 0; i <= steps; i++) {
+                labels.push((i * dt).toFixed(2));
+            }
+
+            const datasets = [];
+            const colors = ['#f59e0b', '#3b82f6', '#10b981', '#ec4899', '#8b5cf6', '#06b6d4', '#f97316', '#6366f1', '#14b8a6', '#d946ef'];
+
+            for (let p = 0; p < numPaths; p++) {
+                const data = [S0];
+                let currentS = S0;
+                for (let i = 1; i <= steps; i++) {
+                    const z = (Math.random() + Math.random() + Math.random() + Math.random() - 2) * 1.732;
+                    currentS = currentS * Math.exp((mu - 0.5 * sigma * sigma) * dt + sigma * Math.sqrt(dt) * z);
+                    data.push(currentS);
+                }
+                datasets.push({
+                    label: `Path ${p+1}`,
+                    data: data,
+                    borderColor: colors[p % colors.length],
+                    borderWidth: 1.5,
+                    pointRadius: 0,
+                    tension: 0.2
+                });
+            }
+
+            const upperCone = [];
+            const lowerCone = [];
+            for (let i = 0; i <= steps; i++) {
+                const t = i * dt;
+                const expected = S0 * Math.exp(mu * t);
+                const std = S0 * sigma * Math.sqrt(t);
+                upperCone.push(expected + 1.96 * std);
+                lowerCone.push(Math.max(0.5, expected - 1.96 * std));
+            }
+
+            datasets.push({
+                label: '95% Upper Bound',
+                data: upperCone,
+                borderColor: 'rgba(239, 68, 68, 0.4)',
+                borderWidth: 1.5,
+                borderDash: [4, 4],
+                pointRadius: 0,
+                fill: false
+            });
+            datasets.push({
+                label: '95% Lower Bound',
+                data: lowerCone,
+                borderColor: 'rgba(239, 68, 68, 0.4)',
+                borderWidth: 1.5,
+                borderDash: [4, 4],
+                pointRadius: 0,
+                fill: false
+            });
+
+            if (myChart) {
+                myChart.data.labels = labels;
+                myChart.data.datasets = datasets;
+                myChart.update();
+            }
+
+            const expectedEnd = S0 * Math.exp(mu * T);
+            const stdEnd = S0 * sigma * Math.sqrt(T);
+            document.getElementById('metricExpected').innerText = 'RM ' + expectedEnd.toFixed(2);
+            document.getElementById('metricStdDev').innerText = (sigma * Math.sqrt(T) * 100).toFixed(1) + '%';
+            document.getElementById('metricBounds').innerText = `RM ${(expectedEnd - 1.96*stdEnd).toFixed(2)} - ${(expectedEnd + 1.96*stdEnd).toFixed(2)}`;
+        }
+
+        function checkQuiz(isCorrect) {
+            const res = document.getElementById('quizResult');
+            res.classList.remove('hidden');
+            if (isCorrect) {
+                res.className = "p-4 rounded-2xl text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200";
+                res.innerHTML = "✨ <strong>Correct!</strong> Spot on. Volatility scales with the square root of time ($\sigma\sqrt{T}$) due to independent increments.";
+            } else {
+                res.className = "p-4 rounded-2xl text-xs font-medium bg-rose-50 text-rose-800 border border-rose-200";
+                res.innerHTML = "☕ <strong>Not quite!</strong> Standard deviation grows with the square root of time ($\sqrt{T}$). Try option B!";
+            }
+        }
+
+        window.onload = function() {
+            initChart();
+            loadQuizQuestion();
+        };
+    </script>
+</body>
+</html>
