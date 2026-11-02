@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vol-Quest | Hosting Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="min-h-screen p-6 md:p-12">
+    <div class="max-w-4xl mx-auto space-y-8">
+        <!-- Header -->
+        <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex items-center space-x-3 mb-2">
+                <div class="bg-blue-600 text-white p-2.5 rounded-xl font-bold">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900">How to Host Your HTML App for Free</h1>
+                    <p class="text-xs text-slate-500 font-medium">Get a live URL and QR Code for your A3 Poster Block 5 in minutes.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Options Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Option 1 -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <div>
+                    <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-bold mb-4">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-900 text-lg mb-1">1. Netlify Drop</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                        The absolute fastest way. No account required. Drag and drop your file and get a live link instantly.
+                    </p>
+                    <ol class="text-xs text-slate-600 space-y-1.5 list-decimal list-inside font-medium">
+                        <li>Save your code as <span class="font-mono text-blue-600">index.html</span></li>
+                        <li>Go to <a href="https://drop.netlify.com" target="_blank" class="text-blue-600 underline font-semibold">drop.netlify.com</a></li>
+                        <li>Drag your file into the browser box</li>
+                        <li>Copy your generated live URL!</li>
+                    </ol>
+                </div>
+                <div class="mt-6 pt-4 border-t border-slate-100 text-[11px] text-emerald-600 font-bold">
+                    ⏱️ Time: 30 seconds
+                </div>
+            </div>
+
+            <!-- Option 2 -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <div>
+                    <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold mb-4">
+                        <i class="fa-solid fa-code"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-900 text-lg mb-1">2. GitHub Pages</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                        Great if you want a permanent repository link for your academic submission.
+                    </p>
+                    <ol class="text-xs text-slate-600 space-y-1.5 list-decimal list-inside font-medium">
+                        <li>Create a new GitHub repository</li>
+                        <li>Upload your <span class="font-mono text-blue-600">index.html</span> file</li>
+                        <li>Go to Repository <strong>Settings &gt; Pages</strong></li>
+                        <li>Set source to <span class="font-mono text-slate-700">main / root</span> and save</li>
+                    </ol>
+                </div>
+                <div class="mt-6 pt-4 border-t border-slate-100 text-[11px] text-purple-600 font-bold">
+                    ⏱️ Time: 2 minutes
+                </div>
+            </div>
+
+            <!-- Option 3 -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold mb-4">
+                        <i class="fa-solid fa-globe"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-900 text-lg mb-1">3. Vercel</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                        Lightning fast global CDN deployment with instant custom subdomains.
+                    </p>
+                    <ol class="text-xs text-slate-600 space-y-1.5 list-decimal list-inside font-medium">
+                        <li>Log into <a href="https://vercel.com" target="_blank" class="text-blue-600 underline font-semibold">vercel.com</a></li>
+                        <li>Import your GitHub project</li>
+                        <li>Click Deploy</li>
+                    </ol>
+                </div>
+                <div class="mt-6 pt-4 border-t border-slate-100 text-[11px] text-blue-600 font-bold">
+                    ⏱️ Time: 1 minute
+                </div>
+            </div>
+        </div>
+
+        <!-- QR Code Tip -->
+        <div class="bg-blue-50 border border-blue-200 p-6 rounded-2xl flex items-start space-x-4">
+            <div class="text-blue-600 text-xl mt-0.5">
+                <i class="fa-solid fa-qrcode"></i>
+            </div>
+            <div>
+                <h4 class="font-bold text-slate-900 text-sm">How to generate your A3 Poster QR Code:</h4>
+                <p class="text-xs text-slate-600 mt-1">
+                    Once you get your live URL from Netlify or GitHub Pages, paste it into any free generator like <a href="https://www.qr-code-generator.com" target="_blank" class="text-blue-600 underline font-semibold">QR Code Generator</a> or Google Chrome's built-in QR generator, save the image, and drop it into Block 5 of your poster!
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+```eof
